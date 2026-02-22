@@ -29,15 +29,17 @@ class Task(TaskCreate):
 
 
 tasks_list = []
-id_counter = 1
+id_counter = 0
 
 @app.get("/")
 async def root():
+
     return {"message": "Hello World"}
 
 
 @app.get("/hello/{name}")
 async def say_hello(name: str):
+
     return {"message": f"Hello {name}"}
 
 @app.post("/tasks/add", response_model=Task)
@@ -56,15 +58,22 @@ async def add_task(task_data: TaskCreate):
     return new_task
 
 @app.get("/tasks", response_model=List[Task])
-async def get_tasks():
+async def get_all_tasks():
     return tasks_list
 
 @app.get("/tasks/{id}", response_model=Task)
-async def get_task(id: int):
-    return tasks_list[id+1] #this is because I started with id == 1, and list first index is 0
+async def get_task_by_id(id: int):
 
-@app.post("/taks/update/mark_finished/{id}", response_model=Task)
-async def update_task(id: int):
+    task = next((task for task in tasks_list if task.id==id), None)
+
+    if task is None:
+        raise HTTPException(status_code=404, detail=f"Task with {id} ID not found")
+
+    return task
+
+@app.patch("/taks/update/mark_finished/{id}", response_model=Task)  #I used patch for updating only specific data (Partial update)
+async def task_mark_as_finished(id: int):
+
     global tasks_list
 
     found_task = None
@@ -77,6 +86,17 @@ async def update_task(id: int):
             break
 
     if found_task is None:
-        raise HTTPException(status_code=404, detail=f"Task with {id} not found")
+        raise HTTPException(status_code=404, detail=f"Task with {id} ID not found")
 
     return found_task
+
+
+@app.delete("/task/delete/{id}", response_model=Task)
+async def delete_task_by_id(id: int):
+
+    task = next((task for task in tasks_list if task.id==id), None)
+
+    if task is None:
+        raise HTTPException(status_code=404, detail=f"Task with {id} ID not found")
+
+    tasks_list.remove(task)

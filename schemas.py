@@ -23,3 +23,24 @@ class Task(TaskCreate):
     id: int
 
 
+class User(BaseModel):
+    username: str
+    email: str | None = None
+    full_name : str | None = None
+
+class UserInDB(User):
+    id: int
+    hashed_password: str
+
+class UserCreate(User):
+    password: str
+
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+
+class TokenData(BaseModel):
+    username: str | None = None
+    user_id: int = None
+

@@ -20,11 +20,21 @@ def get_password_hash(password: str) -> str:
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     return bcrypt.checkpw(plain_password.encode('utf-8'), hashed_password.encode('utf-8'))
 
-def create_access_token(data: dict):
-    to_encode = data.copy()
-    expire_time = datetime.now(timezone.utc) + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
-    to_encode.update({"exp": expire_time})
-    return jwt.encode(to_encode, settings.SECRET_KEY, algorithm="HS256")
+def create_tokens(data: dict):
+    access_to_encode = data.copy()
+    access_expire_time = datetime.now(timezone.utc) + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_to_encode.update({"exp": access_expire_time})
+    access_token = jwt.encode(access_to_encode, settings.SECRET_KEY, algorithm="HS256")
+
+    refresh_to_encode = data.copy()
+    refresh_expire_time = datetime.now(timezone.utc) + timedelta(days=settings.REFRESH_TOKEN_EXPIRE_DAYS)
+    refresh_to_encode.update({"exp": refresh_expire_time})
+    refresh_token = jwt.encode(refresh_to_encode, settings.SECRET_KEY, algorithm="HS256")
+
+
+    return access_token, refresh_token
+
+
 
 
 def get_current_user(token: str = Depends(oauth2_scheme)):

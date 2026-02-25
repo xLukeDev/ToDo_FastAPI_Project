@@ -1,9 +1,7 @@
-from fastapi import FastAPI, Depends, HTTPException, status, APIRouter
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
-import storage
+from fastapi import HTTPException, status, APIRouter
 import utils.storage_utils as storage_utils
-from schemas import User, UserInDB, UserCreate, Token, TokenData
-from utils.auth_utils import get_password_hash, verify_password,create_access_token
+from schemas import User, UserCreate
+from utils.auth_utils import get_password_hash
 
 router = APIRouter(
     prefix="/register",

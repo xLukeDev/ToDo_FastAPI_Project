@@ -21,12 +21,14 @@ class TaskCreate(BaseModel):
 
 class Task(TaskCreate):
     id: int
+    user_id: int
 
 
 class User(BaseModel):
     username: str
     email: str | None = None
     full_name : str | None = None
+    role: str = 'User'
 
 class UserInDB(User):
     id: int
